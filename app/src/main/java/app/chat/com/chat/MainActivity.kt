@@ -11,36 +11,25 @@ import kotlinx.android.synthetic.main.activity_main.*
 import models.Message
 import java.util.*
 
-
 class MainActivity : AppCompatActivity() {
-
     var databaseReference: DatabaseReference? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         initFirebase()
-        
         setupSendButton()
-
         createFirebaseListener()
-
     }
-
     /**
      * Setup firebase
      */
     private fun initFirebase() {
         //init firebase
         FirebaseApp.initializeApp(applicationContext)
-
         FirebaseDatabase.getInstance().setLogLevel(Logger.Level.DEBUG)
-
         //get reference to our db
         databaseReference = FirebaseDatabase.getInstance().reference
     }
-
     /**
      * Set listener for Firebase
      */
@@ -49,31 +38,24 @@ class MainActivity : AppCompatActivity() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
 
                 val toReturn: ArrayList<Message> = ArrayList();
-
                 for(data in dataSnapshot.children){
                     val messageData = data.getValue<Message>(Message::class.java)
-
                     //unwrap
                     val message = messageData?.let { it } ?: continue
-
                     toReturn.add(message)
                 }
-
                 //sort so newest at bottom
                 toReturn.sortBy { message ->
                     message.timestamp
                 }
-
                 setupAdapter(toReturn)
             }
-
             override fun onCancelled(databaseError: DatabaseError) {
                 //log error
             }
         }
         databaseReference?.child("messages")?.addValueEventListener(postListener)
     }
-
     /**
      * Once data is here - display it
      */
@@ -83,11 +65,9 @@ class MainActivity : AppCompatActivity() {
         mainActivityRecyclerView.adapter = MessageAdapter(data) {
             Toast.makeText(this, "${it.text} clicked", Toast.LENGTH_SHORT).show()
         }
-
         //scroll to bottom
         mainActivityRecyclerView.scrollToPosition(data.size - 1)
     }
-
     /**
      * OnClick action for the send button
      */
@@ -100,7 +80,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
     /**
      * Send data to firebase
      */
